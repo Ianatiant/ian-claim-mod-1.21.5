@@ -329,4 +329,35 @@ public class ClaimManager {
             saveNameCache();
         }
     }
+    public static boolean canModifyBlock(ServerPlayerEntity player, int x, int z) {
+        // Bypass for operators/admins
+        if (player.hasPermissionLevel(2)) {
+            return true;
+        }
+
+        // Get all claims at this location
+        List<LandClaim> claims = getClaimsAt(x, z);
+
+        // If unclaimed, allow modification
+        if (claims.isEmpty()) {
+            return true;
+        }
+
+        // Check if player owns ANY of the claims at this location
+        String playerUUID = player.getUuid().toString();
+        for (LandClaim claim : claims) {
+            if (claim.getOwnerUUID().equals(playerUUID)) {
+                return true;
+            }
+        }
+
+        // Not owner - send warning message
+        LandClaim primaryClaim = claims.get(0);
+        player.sendMessage(Text.literal(
+                String.format("§cThis land is owned by %s",
+                        resolveOwnerName(primaryClaim.getOwnerUUID()))
+        ), false);
+
+        return false;
+    }
 }
