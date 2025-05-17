@@ -7,15 +7,24 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import com.mojang.authlib.GameProfile;
+import net.minecraft.server.MinecraftServer;
 
 public class ClaimManager {
     private static final File CLAIMS_FILE = new File("./config/ian_claims/lands.json");
     private static final Map<String, LandClaim> namedClaims = new ConcurrentHashMap<>();
+    private static final Map<UUID, String> nameCache = new ConcurrentHashMap<>();
     private static final Gson GSON = new Gson();
+    public static MinecraftServer server;
 
     static {
         loadClaims();
+    }
+    public static void initialize(MinecraftServer server) {
+        nameCache.clear();
+        System.out.println("ClaimManager initialized with server reference");
     }
 
     private static synchronized void loadClaims() {
@@ -63,6 +72,7 @@ public class ClaimManager {
 
         LandClaim claim = new LandClaim(
                 player.getUuid().toString(),
+                player.getName().getString(),
                 landName,
                 x, z,
                 size
@@ -148,8 +158,38 @@ public class ClaimManager {
     }
 
     public static String getOwnerName(LandClaim claim) {
-        // In a real implementation, you'd want to cache player names
-        // or look them up from the server
-        return "UUID: " + claim.getOwnerUUID(); // Placeholder
+        // First try the stored name
+        if (claim.getOwnerName() != null && !claim.getOwnerName().isEmpty()) {
+            return claim.getOwnerName();
+        }
+
+        // Fallback to lookup if no name stored
+        if (server == null) {
+            return "Unknown Owner";
+        }
+
+        try {
+            UUID ownerUUID = UUID.fromString(claim.getOwnerUUID());
+            ServerPlayerEntity onlinePlayer = server.getPlayerManager().getPlayer(ownerUUID);
+            if (onlinePlayer != null) {
+                return onlinePlayer.getName().getString();
+            }
+
+            Optional<GameProfile> cachedProfile = server.getUserCache().getByUuid(ownerUUID);
+            if (cachedProfile.isPresent() && cachedProfile.get().getName() != null) {
+                return cachedProfile.get().getName();
+            }
+
+            return "Unknown Owner";
+        } catch (IllegalArgumentException e) {
+            return "Invalid UUID";
+        }
     }
+
+    private static void log(String message) {
+        if (server != null) {
+            server.sendMessage(Text.literal("[IanClaims] " + message));
+        }
+    }
+
 }

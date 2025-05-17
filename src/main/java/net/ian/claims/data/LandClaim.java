@@ -10,6 +10,9 @@ public class LandClaim {
     @SerializedName("owner_uuid")
     private final String ownerUUID;
 
+    @SerializedName("owner_name")
+    private final String ownerName;
+
     @SerializedName("land_name")
     private final String landName;
 
@@ -19,8 +22,9 @@ public class LandClaim {
     @SerializedName("trusted_players")
     private final Set<String> trustedPlayers = new HashSet<>();
 
-    public LandClaim(String ownerUUID, String landName, int x, int z, int size) {
+    public LandClaim(String ownerUUID,String ownerName, String landName, int x, int z, int size) {
         this.ownerUUID = ownerUUID;
+        this.ownerName = ownerName;
         this.landName = landName;
         this.size = size;
         this.x1 = x - size/2;
@@ -30,6 +34,7 @@ public class LandClaim {
     }
 
     // Getters
+    public String getOwnerName(){return ownerName;}
     public String getOwnerUUID() { return ownerUUID; }
     public String getLandName() { return landName; }
     public int getX1() { return x1; }

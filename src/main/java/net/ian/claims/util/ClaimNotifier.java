@@ -2,6 +2,7 @@ package net.ian.claims.util;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.HashMap;
@@ -17,10 +18,17 @@ public class ClaimNotifier {
 
         if (lastPos == null || lastPos.getSquaredDistance(currentPos) > 16*16) {
             ClaimManager.getClaimAt(player).ifPresent(claim -> {
-                player.sendMessage(Text.literal(
-                        "Entered claim '" + claim.getOwnerUUID() +
-                                "' owned by " + ClaimManager.getOwnerName(claim)
-                ), false);
+                player.sendMessage(
+                        Text.literal("Entered claim '")
+                                .formatted(Formatting.YELLOW)
+                                .append(Text.literal(claim.getLandName())
+                                        .formatted(Formatting.GOLD, Formatting.BOLD))
+                                .append(Text.literal("' owned by ")
+                                        .formatted(Formatting.YELLOW))
+                                .append(Text.literal(ClaimManager.getOwnerName(claim))
+                                        .formatted(Formatting.GOLD)),
+                        false
+                );
             });
             lastPositions.put(player.getUuid(), currentPos);
         }
