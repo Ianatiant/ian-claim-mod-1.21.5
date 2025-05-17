@@ -30,10 +30,12 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api-base:0.4.1+7a7c9e4455"
+	modImplementation "net.fabricmc.fabric-api:fabric-events-interaction-v0:0.4.2+4a7e8e6655"
 	implementation 'com.google.code.gson:gson:2.10.1'
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:0.89.1+1.20.1"
 
 	// Brigadier for commands
 	include(modImplementation("com.mojang:brigadier:1.0.18"))

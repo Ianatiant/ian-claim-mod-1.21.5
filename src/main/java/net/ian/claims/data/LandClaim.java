@@ -1,64 +1,101 @@
 package net.ian.claims.data;
 
-import java.util.Objects;
+import com.google.gson.annotations.SerializedName;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class LandClaim {
+
+    @SerializedName("owner_uuid")
     private final String ownerUUID;
+
+    @SerializedName("land_name")
+    private final String landName;
+
     private final int x1, z1, x2, z2;
     private final int size;
 
-    public LandClaim(String ownerUUID, int x, int z, int size) {
+    @SerializedName("trusted_players")
+    private final Set<String> trustedPlayers = new HashSet<>();
+
+    public LandClaim(String ownerUUID, String landName, int x, int z, int size) {
         this.ownerUUID = ownerUUID;
+        this.landName = landName;
         this.size = size;
-        this.x1 = x;
-        this.z1 = z;
-        this.x2 = x + size - 1;
-        this.z2 = z + size - 1;
+        this.x1 = x - size/2;
+        this.z1 = z - size/2;
+        this.x2 = x1 + size - 1;
+        this.z2 = z1 + size - 1;
     }
 
-    // Getter methods
-    public String getOwnerUUID() {
-        return ownerUUID;
+    // Getters
+    public String getOwnerUUID() { return ownerUUID; }
+    public String getLandName() { return landName; }
+    public int getX1() { return x1; }
+    public int getZ1() { return z1; }
+    public int getX2() { return x2; }
+    public int getZ2() { return z2; }
+    public int getSize() { return size; }
+
+    /**
+     * @return Set of trusted player UUIDs as strings
+     */
+    public Set<String> getTrustedPlayers() {
+        return trustedPlayers;
     }
 
-    public int getX1() {
-        return x1;
+    /**
+     * Adds a player to the trusted list
+     * @param playerUUID The UUID of the player to trust
+     * @return true if the player was added, false if already trusted
+     */
+    public boolean addTrustedPlayer(String playerUUID) {
+        return trustedPlayers.add(playerUUID);
     }
 
-    public int getZ1() {
-        return z1;
+    /**
+     * Adds a player to the trusted list
+     * @param playerUUID The UUID of the player to trust
+     * @return true if the player was removed, false if wasn't trusted
+     */
+    public boolean removeTrustedPlayer(String playerUUID) {
+        return trustedPlayers.remove(playerUUID);
     }
 
-    public int getX2() {
-        return x2;
-    }
-
-    public int getZ2() {
-        return z2;
-    }
-
-    public int getSize() {
-        return size;
+    /**
+     * Checks if a player is trusted in this claim
+     * @param playerUUID The UUID of the player to check
+     * @return true if the player is trusted
+     */
+    public boolean isTrusted(String playerUUID) {
+        return trustedPlayers.contains(playerUUID);
     }
 
     public boolean contains(int x, int z) {
         return x >= x1 && x <= x2 && z >= z1 && z <= z2;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LandClaim landClaim = (LandClaim) o;
-        return x1 == landClaim.x1 &&
-                z1 == landClaim.z1 &&
-                x2 == landClaim.x2 &&
-                z2 == landClaim.z2 &&
-                Objects.equals(ownerUUID, landClaim.ownerUUID);
+    /**
+     * Checks if a player can modify this claim (owner or trusted)
+     * @param playerUUID The UUID of the player to check
+     * @return true if the player has modification rights
+     */
+    public boolean canModify(String playerUUID) {
+        return ownerUUID.equals(playerUUID) || isTrusted(playerUUID);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(ownerUUID, x1, z1, x2, z2);
+    /**
+     * Gets the center X coordinate of the claim
+     */
+    public int getCenterX() {
+        return x1 + size/2;
+    }
+
+    /**
+     * Gets the center Z coordinate of the claim
+     */
+    public int getCenterZ() {
+        return z1 + size/2;
     }
 }
