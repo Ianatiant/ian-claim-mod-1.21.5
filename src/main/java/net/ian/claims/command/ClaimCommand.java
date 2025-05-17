@@ -13,6 +13,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import static net.ian.claims.util.ClaimManager.transferClaim;
 import static net.minecraft.server.command.CommandManager.*;
 
 public final class ClaimCommand {
@@ -30,9 +31,46 @@ public final class ClaimCommand {
                         .then(argument("claim", StringArgumentType.word())
                                 .executes(ctx -> infoByName(ctx, StringArgumentType.getString(ctx, "claim")))
                         )
+                        .then(literal("transfer")
+                                .then(argument("claim", StringArgumentType.word())
+                                        .then(argument("newOwner", EntityArgumentType.player())
+                                                .executes(ctx -> executeTransfer(
+                                                        ctx,
+                                                        StringArgumentType.getString(ctx, "claim"),
+                                                        EntityArgumentType.getPlayer(ctx, "newOwner")
+                                                ))
+                                        )
+                                )
+                        )
                 );
 
+
         dispatcher.register(claimCommand);
+    }
+    private static int transferClaim(CommandContext<ServerCommandSource> ctx, String claimName, ServerPlayerEntity newOwner) {
+        ServerPlayerEntity player = ctx.getSource().getPlayer();
+        if (player == null) return 0;
+
+        if (ClaimManager.transferClaim(player, claimName, newOwner)) {
+            return Command.SINGLE_SUCCESS;
+        }
+        return 0;
+    }
+    private static int executeTransfer(
+            CommandContext<ServerCommandSource> ctx,
+            String claimName,
+            ServerPlayerEntity newOwner
+    ) {
+        ServerPlayerEntity player = ctx.getSource().getPlayer();
+        if (player == null) {
+            ctx.getSource().sendError(Text.literal("§cOnly players can use this command"));
+            return 0;
+        }
+
+        if (ClaimManager.transferClaim(player, claimName, newOwner)) {
+            return Command.SINGLE_SUCCESS;
+        }
+        return 0;
     }
 
     private static LiteralArgumentBuilder<ServerCommandSource> createSizeCommand(String sizeName, int size) {

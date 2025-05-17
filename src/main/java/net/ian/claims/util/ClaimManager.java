@@ -11,6 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Formatting;
 
 public class ClaimManager {
     private static final File CLAIMS_FILE = new File("./config/ian_claims/lands.json");
@@ -190,6 +191,44 @@ public class ClaimManager {
         if (server != null) {
             server.sendMessage(Text.literal("[IanClaims] " + message));
         }
+    }
+    public static boolean transferClaim(ServerPlayerEntity currentOwner, String claimName, ServerPlayerEntity newOwner) {
+        LandClaim claim = namedClaims.get(claimName.toLowerCase());
+        if (claim == null) {
+            currentOwner.sendMessage(Text.literal("§cNo claim found with that name"), false);
+            return false;
+        }
+
+        if (!claim.getOwnerUUID().equals(currentOwner.getUuid().toString())) {
+            currentOwner.sendMessage(Text.literal("§cYou don't own this claim!"), false);
+            return false;
+        }
+
+        claim.transferOwnership(
+                newOwner.getUuid().toString(),
+                newOwner.getName().getString()
+        );
+
+        saveClaims();
+
+        // Notify both players
+        currentOwner.sendMessage(
+                Text.literal("§aSuccessfully transferred claim '")
+                        .append(Text.literal(claimName).formatted(Formatting.GOLD))
+                        .append("§a to ")
+                        .append(newOwner.getDisplayName()),
+                false
+        );
+
+        newOwner.sendMessage(
+                Text.literal("§aYou are now the owner of claim '")
+                        .append(Text.literal(claimName).formatted(Formatting.GOLD))
+                        .append("§a, transferred by ")
+                        .append(currentOwner.getDisplayName()),
+                false
+        );
+
+        return true;
     }
 
 }

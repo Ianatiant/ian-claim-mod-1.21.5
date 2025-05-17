@@ -8,10 +8,10 @@ import java.util.UUID;
 public class LandClaim {
 
     @SerializedName("owner_uuid")
-    private final String ownerUUID;
+    private String ownerUUID;
 
     @SerializedName("owner_name")
-    private final String ownerName;
+    private String ownerName;
 
     @SerializedName("land_name")
     private final String landName;
@@ -103,4 +103,16 @@ public class LandClaim {
     public int getCenterZ() {
         return z1 + size/2;
     }
+    public void transferOwnership(String newOwnerUuid,String newOwnerName){
+        setOwnerUUID(newOwnerUuid);
+        setOwnerName(newOwnerName);
+        //this.trusterPlayers.clear();
+    }
+    public void setOwnerUUID(String ownerUUID) {
+        this.ownerUUID = ownerUUID;
+    }
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
 }
