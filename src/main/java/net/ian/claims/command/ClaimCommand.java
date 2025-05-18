@@ -265,7 +265,7 @@ public final class ClaimCommand {
             ctx.getSource().sendFeedback(() ->
                             Text.literal("§aRemoved ")
                                     .append(Text.literal(String.valueOf(removed)).formatted(Formatting.GOLD))
-                                    .append(" §aLand owned by ")
+                                    .append("§aLand owned by ")
                                     .append(targetPlayer.getDisplayName()),
                     false
             );
@@ -284,7 +284,7 @@ public final class ClaimCommand {
 
         if (ClaimManager.putLandForSale(player, claimName, price)) {
             ctx.getSource().sendFeedback(() ->
-                    Text.literal("§6[IanClaims]§a Land put up for sale!"), false);
+                    Text.literal("§6[IanClaims]§a Land for sale!"), false);
             return Command.SINGLE_SUCCESS;
         }
         return 0;

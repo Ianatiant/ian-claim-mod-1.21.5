@@ -10,12 +10,13 @@ import net.ian.claims.util.ClaimEvents;
 import net.ian.claims.util.ClaimManager;
 import net.ian.claims.util.ClaimNotifier;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.text.Text;
 import static net.ian.claims.util.ClaimManager.server;
-
 public class IanClaim implements ModInitializer, DedicatedServerModInitializer {
 
     @Override
     public void onInitialize() {
+
         // Client-side initialization if needed
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             ClaimCommand.register(dispatcher);
@@ -27,15 +28,17 @@ public class IanClaim implements ModInitializer, DedicatedServerModInitializer {
 
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {
             ClaimManager.initialize(server);
-            System.out.println("[IanClaims] Server started - claims system ready");
+            server.sendMessage(Text.literal("[IanClaims] Ian's Claim Mod Loaded Successfully."));
+            server.sendMessage(Text.literal("[IanClaims] Configuration loaded."));
+
         });
             ClaimEvents.register();
-            System.out.println("[IanClaims] Ian's Land Claims mod loaded!");
+
     }
 
     @Override
     public void onInitializeServer() {
         ClaimManager.initialize(server);
-        System.out.println("[IanClaims] Server started - claims system ready");
+        System.out.println("[IanClaims] Server detected.");
     }
 }

@@ -7,6 +7,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import java.io.*;
+import java.text.NumberFormat;
 import java.util.*;
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
@@ -46,7 +47,7 @@ public class ClaimManager {
         server = minecraftServer;
         nameCache.clear();
         loadClaims();
-        System.out.println("[IanClaims] ClaimManager initialized");
+        server.sendMessage(Text.literal("[IanClaims] Claim Manager loaded."));
     }
 
     private static synchronized void loadClaims() {
@@ -452,6 +453,7 @@ public class ClaimManager {
 
     public static boolean putLandForSale(ServerPlayerEntity seller, String claimName, int price) {
         LandClaim claim = namedClaims.get(claimName.toLowerCase());
+
         if (claim == null) {
             seller.sendMessage(Text.literal("§6[IanClaims]§c No land found with that name"), false);
             return false;
@@ -486,7 +488,7 @@ public class ClaimManager {
         saveClaims();
 
         seller.sendMessage(Text.literal(String.format(
-                "§6[IanClaims]§a Land put up for sale for §e%d§a! Use §b/claim buy %s§a to purchase",
+                "§6[IanClaims]§a Land put up for sale for §e$%,d§a! Use §b/claim buy %s§a to purchase",
                 price, claimName)), false);
         return true;
     }
@@ -516,7 +518,7 @@ public class ClaimManager {
 
             if (balance < sale.getPrice()) {
                 buyer.sendMessage(Text.literal(String.format(
-                        "§6[IanClaims]§c You need §e%d§c more to buy this land!",
+                        "§6[IanClaims]§c You need §e$%,d§c more to buy this land!",
                         sale.getPrice() - balance)), false);
                 return false;
             }
@@ -531,7 +533,7 @@ public class ClaimManager {
                 scoreboard.getOrCreateScore(seller, bankObjective)
                         .setScore(sellerBalance + sale.getPrice());
                 seller.sendMessage(Text.literal(String.format(
-                        "§6[IanClaims]§a You received §e%d§a for selling §b%s§a!",
+                        "§6[IanClaims]§a You received §e$%,d§a for selling §b%s§a",
                         sale.getPrice(), claimName)), false);
             }
 
@@ -547,7 +549,7 @@ public class ClaimManager {
             saveClaims();
 
             buyer.sendMessage(Text.literal(String.format(
-                    "§6[IanClaims]§a You successfully bought §b%s§a for §e%d§a!",
+                    "§6[IanClaims]§a You successfully bought §b%s§a for §e$%,d§a!",
                     claimName, sale.getPrice())), false);
             return true;
         } catch (Exception e) {
