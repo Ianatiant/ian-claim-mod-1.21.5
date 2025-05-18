@@ -10,7 +10,6 @@ import net.ian.claims.util.ClaimEvents;
 import net.ian.claims.util.ClaimManager;
 import net.ian.claims.util.ClaimNotifier;
 import net.minecraft.server.MinecraftServer;
-
 import static net.ian.claims.util.ClaimManager.server;
 
 public class IanClaim implements ModInitializer, DedicatedServerModInitializer {
@@ -25,16 +24,18 @@ public class IanClaim implements ModInitializer, DedicatedServerModInitializer {
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             server.getPlayerManager().getPlayerList().forEach(ClaimNotifier::checkAndNotify);
         });
-        ClaimEvents.register();
-        ClaimManager.initialize(server);
-        System.out.println("Ian's Land Claims mod loaded!");
+
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
+            ClaimManager.initialize(server);
+            System.out.println("[IanClaims] Server started - claims system ready");
+        });
+            ClaimEvents.register();
+            System.out.println("[IanClaims] Ian's Land Claims mod loaded!");
     }
 
     @Override
     public void onInitializeServer() {
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            ClaimManager.initialize(server);
-            System.out.println("[IanClaims] Server started - claims system ready");
-        });
+        ClaimManager.initialize(server);
+        System.out.println("[IanClaims] Server started - claims system ready");
     }
 }

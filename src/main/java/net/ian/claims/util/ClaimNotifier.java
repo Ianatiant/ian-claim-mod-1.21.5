@@ -19,7 +19,7 @@ public class ClaimNotifier {
         if (lastPos == null || lastPos.getSquaredDistance(currentPos) > 16*16) {
             ClaimManager.getClaimAt(player).ifPresent(claim -> {
                 player.sendMessage(
-                        Text.literal("Entered claim '")
+                        Text.literal("§6[IanClaims]§a Entered Land '")
                                 .formatted(Formatting.YELLOW)
                                 .append(Text.literal(claim.getLandName())
                                         .formatted(Formatting.GOLD, Formatting.BOLD))
