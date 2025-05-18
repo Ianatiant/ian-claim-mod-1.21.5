@@ -4,3 +4,5 @@ Objective: To Create a land claiming mod that utilizes a scoreboard based bankin
 Working on land protection, land ownership transfer and land selling. 
 
 5/17/25: Working on /claim removeall <player> for admins, /claim remove <land_name> for players.
+
+5/18/25: Half done, looking for bugs and logic errors. 
