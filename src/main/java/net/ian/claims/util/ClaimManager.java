@@ -559,7 +559,7 @@ public class ClaimManager {
             return false;
         }
     }
-
-
-
+    public static boolean isInClaim(BlockPos pos) {
+        return getClaimAt(pos.getX(), pos.getZ()).isPresent();
+    }
 }

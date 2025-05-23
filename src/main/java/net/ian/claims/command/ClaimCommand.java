@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import net.ian.claims.IanClaim;
 import net.ian.claims.data.LandClaim;
 import net.ian.claims.util.ClaimManager;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -303,4 +304,8 @@ public final class ClaimCommand {
         }
         return 0;
     }
+    public static void registerCommand (){
+        IanClaim.LOGGER.info("[IanClaims] Registering commands for " + IanClaim.MOD_ID);
+    };
+
 }
